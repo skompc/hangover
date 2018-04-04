@@ -20,24 +20,6 @@ mkdir -p $DESTDIR/build.android/qemu
 mkdir -p $DESTDIR/build.android/glib
 mkdir -p $DESTDIR/build.android/libs
 #
-# Build libs
-cd $DESTDIR/build.android/
-wget -c ftp://ftp-osl.osuosl.org/pub/libpng/src/libpng15/libpng-1.5.30.tar.gz
-tar -xzf libpng-1.5.30.tar.gz
-wget -c https://download.savannah.gnu.org/releases/freetype/freetype-2.8.tar.gz
-tar -xzf freetype-2.8.tar.gz
-cd $DESTDIR/build.android/libpng-1.5.30
-./configure --host=arm-linux-androideabi --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a CXX=arm-linux-androideabi-clang++ CC=arm-linux-androideabi-clang
-make -j4 ; make install
-cd $DESTDIR/build.android/freetype-2.8
-./configure --host=arm-linux-androideabi --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a LIBPNG_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include/libpng15" LIBPNG_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib -lpng15" CXX=arm-linux-androideabi-clang++ CC=arm-linux-androideabi-clang
-make -j4 ; make install
-cd $DESTDIR/glib
-./autogen.sh --help
-cd $DESTDIR/build.android/glib
-../../glib/configure --with-pcre=internal --host=arm-linux-androideabi CXX=arm-linux-androideabi-clang++ CC=arm-linux-androideabi-clang --disable-libmount --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a
-make -j 4 ; make install
-#
 # Build the wine tools for crosscompilation
 cd $DESTDIR/build.android/wine-tools
 $SRCDIR/wine/configure --with-freetype --with-gettext --disable-tests --disable-win16 --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
