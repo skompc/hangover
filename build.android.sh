@@ -6,9 +6,9 @@ SRCDIR=`pwd`
 DESTDIR=`pwd`
 #
 # environment needs to be setup before the script can run, e.g.:
-#export PATH=/home/$USER/ndk/bin/:$PATH
-#export ANDROID_HOME=/home/$USER/asdk
-#export NDK_SYSROOT=/home/$USER/ndk/sysroot
+export PATH=/home/$USER/ndk/bin/:$PATH
+export ANDROID_HOME=/home/$USER/asdk
+export NDK_SYSROOT=/home/$USER/ndk/sysroot
 #
 mkdir -p $DESTDIR/build.android
 mkdir -p $DESTDIR/build.android/wine-tools
