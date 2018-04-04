@@ -58,8 +58,8 @@ make -j 4
 cd $DESTDIR/build.android/qemu
 CC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -D__ANDROID_API__=22 -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include -DWINE_NOWINSOCK" CXX="$DESTDIR/build.android/wine-host/tools/winegcc/wineg++ -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include  -DWINE_NOWINSOCK" $SRCDIR/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone
 make -j 4
-mkdir -p $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll32
-mkdir -p $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll32
+mkdir -p $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll32
+mkdir -p $DESTDIR/build.android/qemu/i386-windows-user/qemu_host_dll32
 
 # Build the wrapper DLLs.
 # TODO: Figure out dependencies between them better.
@@ -82,8 +82,8 @@ do
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
     make -j4 WINEGCC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include"
-    ln -sf $PWD/$dll.dll $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll32
-    ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll32
+    ln -sf $PWD/$dll.dll $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll32
+    ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build.android/qemu/i386-windows-user/qemu_host_dll32
 done
 
 # Link Wine libraries.
@@ -91,20 +91,20 @@ declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "
         "crypt32" "dwmapi" "uxtheme" "setupapi" "wintrust" "wtsapi32" "pdh" "avrt" "cryptnet" "imagehlp" "cryptui" "sensapi"
         "msvcp80" "msvcp100" "lz32" "cabinet" "msi" "dplay" "dplayx" "dpwsockx" "dpnet" "dpnaddr" "dpnhpast" "dpnlobby"
         "dpvoice" "mpr" "oledlg")
-ln -sf $DESTDIR/build.android/wine-guest32/libs/wine/libwine.dll $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll32
+ln -sf $DESTDIR/build.android/wine-guest32/libs/wine/libwine.dll $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll32
 
 for dll in "${wine_dlls[@]}"
 do
-    ln -sf $DESTDIR/build.android/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll32
+    ln -sf $DESTDIR/build.android/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll32
 done
-ln -sf $DESTDIR/build.android/wine-guest32/dlls/winspool.drv/winspool.drv $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll32
+ln -sf $DESTDIR/build.android/wine-guest32/dlls/winspool.drv/winspool.drv $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll32
 
 set +e
 
 # Resetup the apk with qemu
-cp -lf $DESTDIR/build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/bin/
-cp -rf $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/bin/
-cp -rf $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/bin/
+cp -lf $DESTDIR/build.android/qemu/i386-windows-user/qemu-i386.exe.so $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/bin/
+cp -rf $DESTDIR/build.android/qemu/i386-windows-user/qemu_host_dll $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/bin/
+cp -rf $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/bin/
 mkdir -p $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/lib/armeabi-v7a
 cp -f  $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib/* $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/lib/armeabi-v7a/
 rm -rf $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include
