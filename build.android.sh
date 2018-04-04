@@ -6,9 +6,9 @@ SRCDIR=`pwd`
 DESTDIR=`pwd`
 
 # environment needs to be setup before the script can run, e.g.:
-#export PATH=/home/$USER/src/ndk/arm-linux-android/bin/:$PATH
-#export ANDROID_HOME=/home/$USER/src/ANDROID/android-sdk-linux
-#export NDK_SYSROOT=/home/$USER/src/ndk/arm-linux-android/sysroot
+#export PATH=/home/$USER/ndk/bin/:$PATH
+#export ANDROID_HOME=/home/$USER/asdk
+#export NDK_SYSROOT=/home/$USER/ndk/sysroot
 
 mkdir -p $DESTDIR/build.android
 mkdir -p $DESTDIR/build.android/wine-tools
@@ -27,15 +27,15 @@ tar -xzf libpng-1.5.30.tar.gz
 wget -c https://download.savannah.gnu.org/releases/freetype/freetype-2.8.tar.gz
 tar -xzf freetype-2.8.tar.gz
 cd $DESTDIR/build.android/libpng-1.5.30
-./configure --host=arm-linux-android --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a CXX=arm-linux-android-clang++ CC=arm-linux-android-clang
+./configure --host=arm-linux-androideabi --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a CXX=arm-linux-androideabi-clang++ CC=arm-linux-androideabi-clang
 make -j4 ; make install
 cd $DESTDIR/build.android/freetype-2.8
-./configure --host=arm-linux-android --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a LIBPNG_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include/libpng15" LIBPNG_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib -lpng15" CXX=arm-linux-android-clang++ CC=arm-linux-android-clang
+./configure --host=arm-linux-androideabi --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a LIBPNG_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include/libpng15" LIBPNG_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib -lpng15" CXX=arm-linux-androideabi-clang++ CC=arm-linux-androideabi-clang
 make -j4 ; make install
 cd $DESTDIR/glib
 ./autogen.sh --help
 cd $DESTDIR/build.android/glib
-../../glib/configure --with-pcre=internal --host=arm-linux-android CXX=arm-linux-android-clang++ CC=arm-linux-android-clang --disable-libmount --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a
+../../glib/configure --with-pcre=internal --host=arm-linux-androideabi CXX=arm-linux-androideabi-clang++ CC=arm-linux-androideabi-clang --disable-libmount --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a
 make -j 4 ; make install
 
 # Build the wine tools for crosscompilation
@@ -45,7 +45,7 @@ make -j 4 tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wm
 
 # Build the Host (e.g. arm) wine
 cd $DESTDIR/build.android/wine-host
-$SRCDIR/wine/configure --host=arm-linux-android --with-wine-tools=../wine-tools --disable-tests --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/ --libdir=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib CXX=arm-linux-android-clang++ CC=arm-linux-android-clang LIBPNG_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include/libpng15" LIBPNG_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib -lpng15" FREETYPE_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include/freetype2" FREETYPE_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib -lm -lz -lpng15 -lfreetype"
+$SRCDIR/wine/configure --host=arm-linux-androideabi --with-wine-tools=../wine-tools --disable-tests --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/ --libdir=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib CXX=arm-linux-androideabi-clang++ CC=arm-linux-androideabi-clang LIBPNG_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include/libpng15" LIBPNG_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib -lpng15" FREETYPE_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/include/freetype2" FREETYPE_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib -lm -lz -lpng15 -lfreetype"
 make -j 4 ; make install
 ln -sf ../wine-tools/tools tools
 
@@ -56,7 +56,7 @@ make -j 4
 
 # Build qemu
 cd $DESTDIR/build.android/qemu
-CC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -D__ANDROID_API__=22 -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include -DWINE_NOWINSOCK" CXX="$DESTDIR/build.android/wine-host/tools/winegcc/wineg++ -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include  -DWINE_NOWINSOCK" $SRCDIR/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone
+CC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -D__ANDROID_API__=22 -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-androideabi -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include -DWINE_NOWINSOCK" CXX="$DESTDIR/build.android/wine-host/tools/winegcc/wineg++ -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-androideabi -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include  -DWINE_NOWINSOCK" $SRCDIR/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone
 make -j 4
 mkdir -p $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll32
 mkdir -p $DESTDIR/build.android/qemu/i386-windows-user/qemu_host_dll32
@@ -81,7 +81,7 @@ do
     echo >> Makefile
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
-    make -j4 WINEGCC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include"
+    make -j4 WINEGCC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/armeabi-v7a/lib --sysroot=$DESTDIR/build.android/wine-host -b arm-linux-androideabi -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include"
     ln -sf $PWD/$dll.dll $DESTDIR/build.android/qemu/i386-windows-user/qemu_guest_dll32
     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build.android/qemu/i386-windows-user/qemu_host_dll32
 done
