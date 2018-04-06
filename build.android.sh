@@ -8,7 +8,8 @@ DESTDIR=`pwd`
 # environment needs to be setup before the script can run, e.g.:
 export PATH=/home/$USER/ndk/bin/:$PATH
 export ANDROID_HOME=/home/$USER/asdk
-export NDK_SYSROOT=/home/$USER/ndk/sysroot
+export NDK=/home/$USER/ndk/
+export NDK_SYSROOT=$NDK/platforms/android-19/arch-arm/
 #
 mkdir -p $DESTDIR/build.android
 mkdir -p $DESTDIR/build.android/wine-tools
